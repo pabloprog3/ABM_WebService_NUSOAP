@@ -1,0 +1,22 @@
+	<h2 align='center'> Formulario para ingresar materiales</h2>
+
+	<div align='center'>
+		<form >
+			<input type='text' id='nombre' placeholder='Nombre del Material' class='form-control'>
+			<br>
+			<br>
+			<input type='text' id='precio' placeholder='Precio' class='form-control'>
+			<br>
+			<br>
+			
+			<div class='form-inline'>
+				<input type='radio' name='tipo' id='solido' value='solido' class='radio'> SOLIDO
+				<input type='radio' name='tipo' id='liquido' value='liquido' class='radio'> LIQUIDO
+			</div>
+			
+			<br>
+			
+			<input type='button' id='ingresar' onClick='guardarMaterial()' value='Guardar' class='btn btn-primary'>
+		</form>
+
+	</div>

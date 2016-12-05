@@ -1,56 +1,21 @@
 <?php
 
-require_once 'ws/lib/nusoap.php';
+include 'ws/lib/nusoap.php';
+include 'materiales.php';
 
-$usuario = $_POST["usuario"];
-$cookie = $_POST["sicookie"];
-
-
-$clave = $_POST["clave"];
-$encontrado = 0;
-$perfil ="";
-$nombre="";
+$queHacer = $_POST['queHago'];
 
 
-$archivo = fopen('usuarios.txt', 'r');
-
-	while (!feof($archivo)) 
-	{
-		$fila = fgets($archivo);
-		$matrizUsuarios[] = explode('-', $fila);
-	}
-
- 
- foreach ($matrizUsuarios as $i) 
- {
- 	if ($i[0] == $usuario && $i[1] == $clave) 
- 	{
- 		setcookie('nombre', $i[0], time()+3600);
- 		$encontrado = 1;
- 		$nombre = $i[0];
- 		break;
- 	}
- }
-
-
-if ($encontrado != 1) 
+switch ($queHacer) 
 {
-	echo "Usuario no encontrado";
-}
-else
-	{
-		$nombre=explode('@', $nombre);
 
-		//LE PASO LA RUTA DEL WSDL DEL METODO DEFINIDO EN EL SERVIDOR
+	case "cargarTabla":
 		$cliente = new nusoap_client("http://localhost:8080/ABM_WebService_NUSOAP/ws/index.php?wsdl"); 
 		$materiales = $cliente->call("CargarMateriales");
 		$materiales = json_decode($materiales);
 
-
-		echo $nombre[0]."!";
-
 		echo "<br><br><table class='table table-responsive' align='center'";
-		echo "<tr>
+			echo "<tr>
 				<td align='center' class='ingresoTH' style='color:white'>Nombre</td>
 				<td align='center' class='ingresoTH' style='color:white'>Precio</td>
 				<td align='center' class='ingresoTH' style='color:white'>Tipo de material</td>
@@ -67,10 +32,61 @@ else
 				echo "<td align='center'> <input type='button' value='MODIFICAR' class='btn btn-warning' onClick='modificarMaterial(".$material->id.")'></td>";
 			echo "</tr>";
 		}
+	
 
+
+			break;
+
+
+	case 'alta':
+		$nombre=$_POST['nombre'];
+		$precio=(float)$_POST['precio'];
+		$tipo=$_POST['tipo'];
+
+
+		$cliente = new nusoap_client("http://localhost:8080/ABM_WebService_NUSOAP/ws/index.php?wsdl"); 
+		$cliente->call("GuardarMaterial", array('nombre'=>$nombre, 'precio'=>$precio,'tipo'=>$tipo));
+
+	break;
+
+
+	case "borrar":
+		$id = (int) $_POST['id'];
+
+		$cliente = new nusoap_client("http://localhost:8080/ABM_WebService_NUSOAP/ws/index.php?wsdl"); 
+		$cliente->call("BorrarMaterial", array('id'=>$id));
+
+
+	break;
+
+	case "modificar":
+
+				$id=(int) $_POST['id'];
+				$dato = Materiales::traerMaterial($id);
+				
+				$objJson=json_encode($dato);
+
+				echo $objJson;
+
+	break;
+
+	case "modificarBD":
 		 
+				$id= (int) $_POST['id'];
+				$nombre=$_POST['nombre'];
+				$precio= (float) $_POST['precio'];
+				$tipo=$_POST['tipo'];
 
-	}
+				$cliente = new nusoap_client("http://localhost:8080/ABM_WebService_NUSOAP/ws/index.php?wsdl"); 
+				$cliente->call("ModificarMaterial", array('nombre'=>$nombre, 'precio'=>$precio, 'tipo'=>$tipo, 'id'=>$id));
+
+				//Materiales::modificarmaterial($nombre, $precio, $tipo, $id);
+
+
+		break;
+}
+
+
 
 
 

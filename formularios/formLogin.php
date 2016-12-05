@@ -1,4 +1,4 @@
-<form method="post">
+<form method="post" id="formularioLogin">
 
 	<div class="form-group"  style="width:250px">
 		<h2>Final de Programacion 3</h2>
